@@ -19,7 +19,7 @@ jobs:
             - name: checkout code spring demoform
               uses: actions/checkout@v4
             - name: build docker image
-              run: docker build -t $USERNAME/TPcicdExo3Spring .
+              run: docker build -t $USERNAME/tpcicd .
  
             - name: Get Project spring demoform
-              run: docker push $USERNAME/TPcicdExo3Spring
+              run: docker push $USERNAME/tpcicd
