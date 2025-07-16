@@ -1,12 +1,12 @@
 name: mon context
 
-on: push
+on: fork
 
 jobs:
     info:
         runs-on : ubuntu-latest
         steps:
-            - name: env information
+            - name: env information if fork
               run: echo "Here's env informations"
                    echo "${{ toJson(github) }}"
 
