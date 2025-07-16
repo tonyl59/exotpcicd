@@ -1,0 +1,25 @@
+name: docker
+
+on:
+    push:
+    workflow_dispatch:
+
+jobs:
+    docker:
+        runs-on: ubuntu-latest
+        env:
+            USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+            PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        steps:
+            - name: login dockerhub
+              uses: docker/login-action@v3
+              with:
+                username: ${{ env.USERNAME }}
+                password: ${{ env.PASSWORD }}
+            - name: checkout code spring demoform
+              uses: actions/checkout@v4
+            - name: build docker image
+              run: docker build -t $USERNAME/TPcicdExo3Spring .
+ 
+            - name: Get Project spring demoform
+              run: docker push $USERNAME/TPcicdExo3Spring

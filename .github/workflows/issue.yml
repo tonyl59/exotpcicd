@@ -1,0 +1,22 @@
+name: Issue creation alert
+on:
+    issues:
+        types: opened
+
+jobs:
+    commentaire:
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+        steps:
+            - name: Answer to issue
+              env:
+                GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                ISSUE_URL: ${{ github.event.issue.html_url}}
+                AUTHOR_NAME: ${{ github.event.issue.user.login}}
+                ISSUE_NAME: ${{ github.event.issue.title}}
+              run: gh issue comment $ISSUE_URL --body "Hello $AUTHOR_NAME, we've taken in account your issue $ISSUE_NAME"
+
+
+    
+

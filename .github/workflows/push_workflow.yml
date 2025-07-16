@@ -1,0 +1,68 @@
+# Nom pour le workflow
+name: Build Spring App
+
+# Declencher workflow lors du push d'application
+on: 
+    push:
+        branches: [main,dev]
+        tags:
+            - 'v*'
+
+            
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            # Setting up JDK17 to make Java projects work
+            - name: JDK17 setup
+              uses: actions/setup-java@v4
+              with:
+                distribution: 'temurin' # See 'Supported distributions' for available options
+                java-version: '17'
+
+            # Get Java project on directory root (will take .pom and src)    
+            - name: Project chekout
+              uses: actions/checkout@v4
+
+            # Make cache to avoid downloading every dependencies everytimes
+            - name: Make cache
+              uses: actions/cache@v4
+              with:
+                path: ~/.m2/repository 
+                key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }} 
+                restore-keys: ${{ runner.os }}-maven- # Can find caches in github.com -> actions -> management "Caches"
+
+            
+            # Dependencies installation (detected on pom.xml)
+            - name: Install dependencies
+              run: mvn dependency:resolve
+            
+            # Add packaged jar/war file to make project function 
+            - name: Build application
+              run: mvn clean package # package will add packaged jar or war to your target folder, We can check it when, we empty the target folder (using mvn clean) and then run mvn package. 
+
+
+            # Artefact uploading to directly run java script
+            - name: Upload artefact
+              if: success() && github.ref == 'refs/heads/main'
+              uses: actions/upload-artifact@v4
+              with:
+                name: build_app
+                path: target/*.jar
+                # Eviter de double cliquer car ca rendra difficile de l'eteindre à part le redemarrer, pour lancer l'appli .jar depuis le terminal =>
+                # java -jar [nom du fichier .jar] 
+
+            - name: Github release creation
+              uses: softprops/action-gh-release@v2
+              with:
+                tag_name: ${{ github.ref_name }}
+                name: Release ${{ github.ref }}
+                files: target/*.jar
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
+    
+

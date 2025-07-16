@@ -1,0 +1,13 @@
+name: mon context
+
+on: push
+
+jobs:
+    info:
+        runs-on : ubuntu-latest
+        steps:
+            - name: env information
+              run: echo "Here's env informations"
+                   echo "${{ toJson(github) }}"
+
+    
